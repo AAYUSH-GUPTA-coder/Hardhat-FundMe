@@ -8,14 +8,19 @@ error NOT_OWNER();
 error SEND_MORE_ETH();
 error TRANSFER_FUND_FAIL();
 
+/** @title A contract for crowd Funding
+ * @author Aayush Gupta
+ * @notice This contract is to demo a sample funding contracts
+ * @dev This implements price feeds as our library
+ */
 contract FundMe {
+    // Type Declarations
     using PriceConverter for uint256;
 
+    // State Variables
     mapping(address => uint256) public addressToAmountFunded;
     mapping(address => bool) public isAlreadyFunder;
     address[] public funders;
-
-    // Could we make this constant?  /* hint: no! We should make it immutable! */
     address public immutable i_owner;
     uint256 public constant MINIMUM_USD = 50 * 10**18;
 
@@ -26,6 +31,18 @@ contract FundMe {
         priceFeed = AggregatorV3Interface(priceFeedAddress);
     }
 
+    receive() external payable {
+        fund();
+    }
+
+    fallback() external payable {
+        fund();
+    }
+
+    /**
+     * @notice This function funds this contract
+     * @dev This implements price feeds as our Library
+     */
     function fund() public payable {
         if (msg.value.getConversionRate(priceFeed) < MINIMUM_USD) {
             revert SEND_MORE_ETH();
@@ -59,13 +76,5 @@ contract FundMe {
         }("");
         if (!callSuccess) revert TRANSFER_FUND_FAIL();
         // require(callSuccess, "Call failed");
-    }
-
-    fallback() external payable {
-        fund();
-    }
-
-    receive() external payable {
-        fund();
     }
 }

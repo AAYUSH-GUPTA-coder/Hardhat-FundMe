@@ -5,8 +5,9 @@
 // module.exports.default = deployFunc
 
 const { network } = require("hardhat")
-const { networkConfig, developentChains } = require("../hepler-hardhat-config")
+const { networkConfig, developmentChains } = require("../hepler-hardhat-config")
 const { verify } = require("../utils/verify")
+require("dotenv").config()
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     // hre.getNamedAccounts
@@ -26,6 +27,8 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     } else {
         ethUsdPriceFeedAddress = networkConfig[chainId]["ethUsdPriceFeed"]
     }
+    log("------------------------------------------------------")
+    log("Deploying FundMe and waiting for confirmations....")
 
     // if the chainlink ethUsdPriceFeed contract doesn't exist, we deploy a minimal version of contract
     // for our local testing
@@ -35,11 +38,15 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
         from: deployer,
         args: args,
         log: true,
+        waitConfirmations: network.config.blockConfirmations || 1,
     })
-    if (!chainId == 31337 && process.env.ETHERSCAN_API_KEY) {
+    log(`FundMe deployed at ${fundMe.address}`)
+
+    if (chainId != 31337 && process.env.ETHERSCAN_API_KEY) {
         await verify(fundMe.address, args)
     }
     log("------------------------------------------------------------")
 }
 
+// tags are used to call specific file in the deploy
 module.exports.tags = ["all", "fundme"]

@@ -1,4 +1,4 @@
-const { run } = requrie("hardhat")
+const { run } = require("hardhat")
 
 async function verify(contractAddress, args) {
     console.log("Verifying contract...")
