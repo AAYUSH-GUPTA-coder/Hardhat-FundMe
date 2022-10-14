@@ -3,7 +3,7 @@ const {
     developmentChains,
     DECIMALS,
     INITIAL_ANSWER,
-} = require("../hepler-hardhat-config")
+} = require("../helper-hardhat-config")
 
 module.exports = async ({ getNamedAccounts, deployments }) => {
     const { deploy, log } = deployments
